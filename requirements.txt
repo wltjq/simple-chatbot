@@ -1,0 +1,5 @@
+pypdf
+langchain
+upstage
+chromadb
+tiktoken

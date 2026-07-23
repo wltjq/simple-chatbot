@@ -1,4 +1,3 @@
-from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_upstage import ChatUpstage, UpstageEmbeddings
 from langchain_chroma import Chroma
@@ -9,7 +8,7 @@ from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.runnables import RunnableWithMessageHistory
 import os
-
+from langchain_community.document_loaders import TextLoader
 store = {}
 
 
@@ -19,9 +18,9 @@ def get_session_history(session_id:str) -> BaseChatMessageHistory:
     return store[session_id]
 
 
-def pdf_split():
-    loader = PyPDFLoader("운수.pdf")
-    pages = loader.load_and_split()
+def text_split():
+    loader = TextLoader("운수.txt", encoding="utf-8")
+    pages = loader.load()
 
     text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=800,
@@ -39,7 +38,7 @@ def get_llm(model="solar-pro"):
 
 def get_retriever():
     embeddings = UpstageEmbeddings(model="solar-embedding-1-large")
-    texts = pdf_split()
+    texts = text_split()
 
     if os.path.exists("chroma_db"):
         db = Chroma(persist_directory="chroma_db", embedding_function=embeddings, collection_name='chroma-db')
